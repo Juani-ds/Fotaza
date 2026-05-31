@@ -1,0 +1,12 @@
+{
+  "name": "fotaza",
+  "version": "1.0.0",
+  "description": "Proyecto TPI",
+  "license": "ISC",
+  "author": "Juan Ignacio Género",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
