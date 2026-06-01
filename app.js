@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import { sequelize } from './models/index.js';
 
 
 //constantes
@@ -23,5 +24,5 @@ app.get('/', (req, res)=> {
 
 //servidor
 app.listen(PORT, () => {
-    console.log('Servidor escuchando el puerto ${PORT}')
+    console.log(`Servidor escuchando el puerto ${PORT}`)
 })
