@@ -1,15 +1,18 @@
 extends ../layout.pug
 
 block content
-    h1 Iniciar sesión
+    h1 Registro
     if error
         p.error= error
-    form(method='POST' action='/auth/login')
+    form(method='POST' action='/auth/signup')
+        div
+            label Nombre
+            input(type='text' name='nombre' required)
         div
             label Email
             input(type='email' name='email' required)
         div
             label Contraseña
             input(type='password' name='password' required)
-        button(type='submit') Ingresar
-    a(href='/auth/registro') ¿No tenés cuenta? Registrate
+        button(type='submit') Registrarse
+    a(href='/auth/login') ¿Ya tenés cuenta? Iniciá sesión

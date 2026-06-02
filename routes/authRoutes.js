@@ -3,8 +3,8 @@ import { mostrarRegistro, registrar, mostrarLogin, login, logout } from '../cont
 
 const router = express.Router();
 
-router.get('/registro', mostrarRegistro);
-router.post('/registro', registrar);
+router.get('/signup', mostrarRegistro);
+router.post('/signup', registrar);
 router.get('/login', mostrarLogin);
 router.post('/login', login);
 router.get('/logout', logout);

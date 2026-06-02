@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { Usuario } from '../models/index.js';
 
 export const mostrarRegistro = (req, res) => {
-    res.render('auth/registro');
+    res.render('auth/signup');
 };
 
 export const registrar = async (req, res) => {
@@ -12,7 +12,7 @@ export const registrar = async (req, res) => {
         // Verifico el usuario
         const usuarioExistente = await Usuario.findOne({ where: { email } });
         if (usuarioExistente) {
-            return res.render('auth/registro', { error: 'El email ya está registrado' });
+            return res.render('auth/signup', { error: 'El email ya está registrado' });
         }
 
         // Hasheo contraseña 
@@ -24,7 +24,7 @@ export const registrar = async (req, res) => {
         res.redirect('/auth/login');
     } catch (error) {
         console.error(error);
-        res.render('auth/registro', { error: 'Error al registrar usuario' });
+        res.render('auth/signup', { error: 'Error al registrar usuario' });
     }
 };
 
