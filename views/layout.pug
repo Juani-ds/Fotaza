@@ -4,4 +4,14 @@ html(lang='es')
         title Fotaza
         script(src='https://cdn.tailwindcss.com')
     body.bg-gray-100.min-h-screen
-        block content
+        nav.bg-white.shadow.p-4.flex.justify-between.items-center
+            a.font-bold.text-xl(href='/') Fotaza
+            div
+                if usuario
+                    span.mr-4 Hola, #{usuario.nombre}
+                    a.bg-red-500.text-white.px-4.py-2.rounded(href='/auth/logout') Cerrar sesión
+                else
+                    a.mr-4(href='/auth/login') Iniciar sesión
+                    a.bg-blue-500.text-white.px-4.py-2.rounded(href='/auth/signup') Registrarse
+        main.p-8
+            block content

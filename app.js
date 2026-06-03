@@ -22,6 +22,12 @@ app.use(session({
     cookie: {maxAge: 1000*60*60*24}
 }));
 
+//para vistas
+app.use((req, res, next) => {
+    res.locals.usuario = req.session.usuario || null;
+    next();
+});
+
 //motor de plantillas
 app.set('view engine', 'pug');
 app.set('views' , './views');
@@ -30,7 +36,7 @@ app.set('views' , './views');
 app.use('/auth', authRoutes);
 
 app.get('/', (req, res)=> {
-    res.render('home', { usuario: req.session.usuario })
+    res.render('home');
 })
 
 
