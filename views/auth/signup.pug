@@ -1,18 +1,21 @@
 extends ../layout.pug
 
 block content
-    h1 Registro
-    if error
-        p.error= error
-    form(method='POST' action='/auth/signup')
-        div
-            label Nombre
-            input(type='text' name='nombre' required)
-        div
-            label Email
-            input(type='email' name='email' required)
-        div
-            label Contraseña
-            input(type='password' name='password' required)
-        button(type='submit') Registrarse
-    a(href='/auth/login') ¿Ya tenés cuenta? Iniciá sesión
+    .min-h-screen.flex.items-center.justify-center
+        .bg-white.p-8.rounded-lg.shadow-md.w-full.max-w-md
+            h1.text-2xl.font-bold.text-center.mb-6 Crear cuenta
+            if error
+                p.text-red-500.text-sm.mb-4= error
+            form(method='POST' action='/auth/signup')
+                div.mb-4
+                    label.block.text-sm.font-medium.mb-1 Nombre
+                    input.w-full.border.rounded.px-3.py-2(type='text' name='nombre' required)
+                div.mb-4
+                    label.block.text-sm.font-medium.mb-1 Email
+                    input.w-full.border.rounded.px-3.py-2(type='email' name='email' required)
+                div.mb-6
+                    label.block.text-sm.font-medium.mb-1 Contraseña
+                    input.w-full.border.rounded.px-3.py-2(type='password' name='password' required)
+                button.w-full.bg-blue-500.text-white.py-2.rounded.hover:bg-blue-600(type='submit') Registrarse
+            .text-center.mt-4
+                a.text-blue-500(href='/auth/login') ¿Ya tenés cuenta? Iniciá sesión

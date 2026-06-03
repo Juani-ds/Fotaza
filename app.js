@@ -30,7 +30,7 @@ app.set('views' , './views');
 app.use('/auth', authRoutes);
 
 app.get('/', (req, res)=> {
-    res.send('Hola, mundo!')
+    res.render('home', { usuario: req.session.usuario })
 })
 
 

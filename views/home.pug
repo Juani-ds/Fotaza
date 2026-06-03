@@ -1,0 +1,14 @@
+extends layout.pug
+
+block content
+    nav.bg-white.shadow.p-4.flex.justify-between.items-center
+        span.font-bold.text-xl Fotaza
+        div
+            if usuario
+                span.mr-4 Hola, #{usuario.nombre}
+                a.bg-red-500.text-white.px-4.py-2.rounded(href='/auth/logout') Cerrar sesión
+            else
+                a.mr-4(href='/auth/login') Iniciar sesión
+                a.bg-blue-500.text-white.px-4.py-2.rounded(href='/auth/signup') Registrarse
+    main.p-8
+        h1.text-2xl Bienvenido a Fotaza
