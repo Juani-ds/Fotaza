@@ -1,0 +1,37 @@
+extends ../layout.pug
+
+block content
+    .max-w-2xl.mx-auto.bg-white.p-8.rounded-lg.shadow-md.mt-8
+        h1.text-2xl.font-bold.mb-6 Nueva publicación
+        form(method='POST' action='/publicaciones/crear' enctype='multipart/form-data')
+            div.mb-4
+                label.block.text-sm.font-medium.mb-1 Título
+                input.w-full.border.rounded.px-3.py-2(type='text' name='titulo' required)
+            div.mb-4
+                label.block.text-sm.font-medium.mb-1 Descripción (opcional)
+                textarea.w-full.border.rounded.px-3.py-2(name='descripcion' rows='3')
+            div.mb-4
+                label.block.text-sm.font-medium.mb-1 Imágenes
+                input.w-full.border.rounded.px-3.py-2(type='file' name='imagenes' multiple accept='image/*')
+            div.mb-4
+                label.block.text-sm.font-medium.mb-1 Etiquetas existentes
+                .flex.flex-wrap.gap-2
+                    each etiqueta in etiquetas
+                        label.cursor-pointer
+                            input(type='checkbox' name='etiquetas_ids' value=etiqueta.id)
+                            span.ml-1= etiqueta.nombre
+            div.mb-4
+                label.block.text-sm.font-medium.mb-1 Etiquetas nuevas (separadas por coma)
+                input.w-full.border.rounded.px-3.py-2(type='text' name='etiquetas_nuevas' placeholder='ej: paisaje, naturaleza')
+            div.mb-4
+                label.flex.items-center.gap-2.cursor-pointer
+                    input(type='checkbox' name='es_copyright' id='es_copyright')
+                    span.text-sm.font-medium Copyright
+            div.mb-6#campo-marca-agua(style='display:none')
+                label.block.text-sm.font-medium.mb-1 Marca de agua
+                input.w-full.border.rounded.px-3.py-2(type='text' name='marca_agua' placeholder='ej: © Juan García')
+            button.w-full.bg-blue-900.text-white.py-2.rounded(type='submit' class='hover:bg-red-600') Publicar
+        script.
+            document.getElementById('es_copyright').addEventListener('change', function() {
+                document.getElementById('campo-marca-agua').style.display = this.checked ? 'block' : 'none';
+            });

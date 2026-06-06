@@ -3,6 +3,7 @@ import express from 'express';
 import session from 'express-session';
 import authRoutes from './routes/authRoutes.js';
 import { sequelize } from './models/index.js';
+import pubRoutes from './routes/pubRoutes.js';
 
 
 //constantes
@@ -38,6 +39,7 @@ app.use('/auth', authRoutes);
 app.get('/', (req, res)=> {
     res.render('home');
 })
+app.use('/publicaciones', pubRoutes);
 
 
 //servidor
