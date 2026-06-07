@@ -22,8 +22,8 @@ Imagen.belongsTo(Publicacion, { foreignKey: 'publicacion_id' });
 Licencia.hasMany(Imagen, { foreignKey: 'licencia_id' });
 Imagen.belongsTo(Licencia, { foreignKey: 'licencia_id' });
 
-Publicacion.belongsToMany(Etiqueta, { through: 'pub_etiquetas', foreignKey: 'publicacion_id' });
-Etiqueta.belongsToMany(Publicacion, { through: 'pub_etiquetas', foreignKey: 'etiqueta_id' });
+Publicacion.belongsToMany(Etiqueta, { through: 'pub_etiquetas', foreignKey: 'publicacion_id', timestamps: false });
+Etiqueta.belongsToMany(Publicacion, { through: 'pub_etiquetas', foreignKey: 'etiqueta_id', timestamps: false });
 
 Imagen.hasMany(Comentario, { foreignKey: 'imagen_id' });
 Comentario.belongsTo(Imagen, { foreignKey: 'imagen_id' });
@@ -46,8 +46,8 @@ Usuario.hasMany(Seguidor, { foreignKey: 'seguido_id', as: 'seguidores' });
 Usuario.hasMany(Coleccion, { foreignKey: 'usuario_id' });
 Coleccion.belongsTo(Usuario, { foreignKey: 'usuario_id' });
 
-Coleccion.belongsToMany(Publicacion, { through: 'col_publicaciones', foreignKey: 'coleccion_id' });
-Publicacion.belongsToMany(Coleccion, { through: 'col_publicaciones', foreignKey: 'publicacion_id' });
+Coleccion.belongsToMany(Publicacion, { through: 'col_publicaciones', foreignKey: 'coleccion_id', timestamps: false });
+Publicacion.belongsToMany(Coleccion, { through: 'col_publicaciones', foreignKey: 'publicacion_id', timestamps: false });
 
 Usuario.hasMany(Notificacion, { foreignKey: 'usuario_id' });
 Notificacion.belongsTo(Usuario, { foreignKey: 'usuario_id' });

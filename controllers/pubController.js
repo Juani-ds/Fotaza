@@ -1,4 +1,4 @@
-import { Etiqueta, Licencia } from '../models/index.js';
+import { Etiqueta, Licencia, Publicacion, Imagen, sequelize } from '../models/index.js';
 
 export const mostrarFormulario = async (req, res) => {
     try {
@@ -12,5 +12,54 @@ export const mostrarFormulario = async (req, res) => {
 };
 
 export const crearPublicacion = async (req, res) => {
-    res.send('crear publicacion');
+        try {
+        const { titulo, descripcion, etiquetas_ids, etiquetas_nuevas, imagenes_base64, es_copyright, marca_agua } = req.body;
+
+        const publicacion = await Publicacion.create({
+            usuario_id: req.session.usuario.id,
+            titulo,
+            descripcion: descripcion || null
+        });
+
+        let etiquetasFinales = [];
+        if (etiquetas_ids) {
+            const ids = Array.isArray(etiquetas_ids) ? etiquetas_ids : [etiquetas_ids];
+            etiquetasFinales = [...ids.map(id => parseInt(id))];
+        }
+
+        if (etiquetas_nuevas && etiquetas_nuevas.trim() !== '') {
+            const nuevas = etiquetas_nuevas.split(',').map(e => e.trim()).filter(e => e !== '');
+            for (const nombre of nuevas) {
+                const [etiqueta] = await Etiqueta.findOrCreate({ where: { nombre } });
+                etiquetasFinales.push(etiqueta.id);
+            }
+        }
+
+        if (etiquetasFinales.length > 0) {
+            for (const etiquetaId of etiquetasFinales) {
+                await sequelize.query(
+                    'INSERT INTO pub_etiquetas (publicacion_id, etiqueta_id) VALUES (:pubId, :etId)',
+                    { replacements: { pubId: publicacion.id, etId: etiquetaId } }
+                );
+            }
+        }
+
+        const esCopy = es_copyright === 'on';
+        const licencia = await Licencia.findOne({ where: { es_copyright: esCopy } });
+
+        const imagenes = Array.isArray(imagenes_base64) ? imagenes_base64 : [imagenes_base64];
+        for (const base64 of imagenes) {
+            await Imagen.create({
+                publicacion_id: publicacion.id,
+                licencia_id: licencia.id,
+                url: base64,
+                marca_agua: esCopy ? (marca_agua || null) : null
+            });
+        }
+
+        res.redirect('/');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al crear la publicacion');
+    }
 };
