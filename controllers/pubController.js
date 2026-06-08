@@ -1,4 +1,4 @@
-import { Etiqueta, Licencia, Publicacion, Imagen, Usuario, sequelize } from '../models/index.js';
+import { Etiqueta, Licencia, Publicacion, Imagen, Usuario, Valoracion, sequelize } from '../models/index.js';
 
 export const mostrarFormulario = async (req, res) => {
     try {
@@ -68,7 +68,7 @@ export const verPublicacion = async (req, res) => {
         const publicacion = await Publicacion.findByPk(req.params.id, {
             include: [
                 { model: Usuario, attributes: ['nombre'] },
-                { model: Imagen },
+                { model: Imagen, include: [{ model: Valoracion }] },
                 { model: Etiqueta }
             ]
         });
@@ -76,7 +76,19 @@ export const verPublicacion = async (req, res) => {
         if (!publicacion) {
             return res.status(404).send('Publicación no encontrada');
         }
-        
+
+        const usuario_id = req.session.usuario?.id;
+        publicacion.Imagens.forEach(imagen => {
+            const votos = imagen.Valoracions || [];
+            imagen.totalVotos = votos.length;
+            imagen.promedio = votos.length > 0
+                ? votos.reduce((acc, v) => acc + v.puntuacion, 0) / votos.length
+                : 0;
+            imagen.yaValoro = usuario_id
+                ? votos.some(v => v.usuario_id === usuario_id)
+                : false;
+        });
+
         res.render('publicaciones/ver', { publicacion });
     } catch (error) {
         console.error(error);

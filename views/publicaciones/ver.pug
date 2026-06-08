@@ -1,6 +1,10 @@
 extends ../layout.pug
 
 block content
+    style.
+        .star-btn { cursor: pointer; transition: color 0.1s; }
+        .star-btn.active { color: #FBBF24; }
+
     .max-w-3xl.mx-auto.mt-8.px-4
         .bg-white.rounded-lg.shadow.p-6
             .flex.justify-between.items-start.mb-4
@@ -12,8 +16,49 @@ block content
                 .flex.flex-wrap.gap-2.mb-4
                     each etiqueta in publicacion.Etiqueta
                         span.bg-gray-100.text-gray-600.px-2.py-1.rounded.text-sm= etiqueta.nombre
-            if publicacion.Imagens
-                each imagen in publicacion.Imagens
+
+            each imagen in publicacion.Imagens
+                .mb-8.border-b.pb-8
+                    img.w-full.rounded.mb-4(src=imagen.url)
                     .mb-4
-                        img.w-full.rounded(src=imagen.url)
+                        if imagen.totalVotos > 0
+                            .flex.items-center.gap-2.mb-2
+                                span.text-yellow-400.font-bold.text-lg= imagen.promedio.toFixed(1)
+                                span.text-gray-400.text-sm= '(' + imagen.totalVotos + ' votos)'
+                        else
+                            p.text-gray-400.text-sm.mb-2 Sin valoraciones aún
+
+                        if usuario && !imagen.yaValoro
+                            form(method='POST' action='/imagenes/' + imagen.id + '/valorar')
+                                .flex.gap-1.mb-2
+                                    each val in [1,2,3,4,5]
+                                        button.text-3xl.text-gray-300(type='button' class='star-btn' data-value=val) ★
+                                input(type='hidden' name='puntuacion' id='puntuacion' value='')
+                                button.bg-yellow-400.text-white.px-4.py-1.rounded.text-sm(type='submit' class='hover:bg-yellow-500') Valorar
+                        else if usuario && imagen.yaValoro
+                            p.text-sm.text-gray-400 Ya valoraste esta imagen
+
         a.text-blue-500.mt-4.block(href='/') Volver
+
+    script.
+        document.querySelectorAll('form').forEach(form => {
+            const stars = form.querySelectorAll('.star-btn');
+            const input = form.querySelector('input[name="puntuacion"]');
+            if (!stars.length || !input) return;
+
+            stars.forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    const val = parseInt(this.dataset.value);
+                    stars.forEach((s, i) => s.classList.toggle('active', i < val));
+                });
+                star.addEventListener('mouseout', function() {
+                    const current = parseInt(input.value) || 0;
+                    stars.forEach((s, i) => s.classList.toggle('active', i < current));
+                });
+                star.addEventListener('click', function() {
+                    input.value = this.dataset.value;
+                    const val = parseInt(this.dataset.value);
+                    stars.forEach((s, i) => s.classList.toggle('active', i < val));
+                });
+            });
+        });

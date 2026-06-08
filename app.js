@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes.js';
 import { sequelize } from './models/index.js';
 import pubRoutes from './routes/pubRoutes.js';
 import { Publicacion, Imagen, Usuario } from './models/index.js';
+import imagenRoutes from './routes/imagenRoutes.js';
 
 
 //constantes
@@ -52,6 +53,7 @@ app.get('/', async (req, res) => {
         res.render('home', { publicaciones: [] });
     }
 });
+app.use('/imagenes', imagenRoutes);
 
 
 //servidor
