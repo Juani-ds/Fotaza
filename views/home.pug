@@ -1,4 +1,21 @@
 extends layout.pug
 
 block content
-    h1.text-2xl Bienvenido a Fotaza
+    .max-w-4xl.mx-auto.mt-8.px-4
+        .flex.justify-between.items-center.mb-6
+            h1.text-2xl.font-bold Publicaciones
+            if usuario
+                a.bg-blue-500.text-white.px-4.py-2.rounded(href='/publicaciones/crear' class='hover:bg-blue-600') + Nueva publicación
+
+        if publicaciones.length === 0
+            p.text-gray-500 No hay publicaciones todavía.
+        else
+            .grid.grid-cols-1.gap-6
+                each pub in publicaciones
+                    .bg-white.rounded-lg.shadow.p-4
+                        .flex.justify-between.items-start
+                            h2.text-xl.font-semibold= pub.titulo
+                            span.text-sm.text-gray-400= pub.Usuario.nombre
+                        if pub.Imagenes && pub.Imagenes.length > 0
+                            img.mt-3.rounded.w-full.object-cover(src=pub.Imagenes[0].url style='max-height:300px')
+                        a.text-blue-500.text-sm.mt-2.block(href='/publicaciones/' + pub.id) Ver publicación

@@ -4,6 +4,7 @@ import session from 'express-session';
 import authRoutes from './routes/authRoutes.js';
 import { sequelize } from './models/index.js';
 import pubRoutes from './routes/pubRoutes.js';
+import { Publicacion, Imagen, Usuario } from './models/index.js';
 
 
 //constantes
@@ -35,11 +36,22 @@ app.set('views' , './views');
 
 //rutas
 app.use('/auth', authRoutes);
-
-app.get('/', (req, res)=> {
-    res.render('home');
-})
 app.use('/publicaciones', pubRoutes);
+app.get('/', async (req, res) => {
+    try {
+        const publicaciones = await Publicacion.findAll({
+            include: [
+                { model: Usuario, attributes: ['nombre'] },
+                { model: Imagen, attributes: ['url'], limit: 1 }
+            ],
+            order: [['creado_en', 'DESC']]
+        });
+        res.render('home', { publicaciones });
+    } catch (error) {
+        console.error(error);
+        res.render('home', { publicaciones: [] });
+    }
+});
 
 
 //servidor

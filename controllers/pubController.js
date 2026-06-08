@@ -1,4 +1,4 @@
-import { Etiqueta, Licencia, Publicacion, Imagen, sequelize } from '../models/index.js';
+import { Etiqueta, Licencia, Publicacion, Imagen, Usuario, sequelize } from '../models/index.js';
 
 export const mostrarFormulario = async (req, res) => {
     try {
@@ -61,5 +61,25 @@ export const crearPublicacion = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send('Error al crear la publicacion');
+    }
+};
+export const verPublicacion = async (req, res) => {
+    try {
+        const publicacion = await Publicacion.findByPk(req.params.id, {
+            include: [
+                { model: Usuario, attributes: ['nombre'] },
+                { model: Imagen },
+                { model: Etiqueta }
+            ]
+        });
+
+        if (!publicacion) {
+            return res.status(404).send('Publicación no encontrada');
+        }
+    console.log(JSON.stringify(publicacion, null, 2));
+        res.render('publicaciones/ver', { publicacion });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al cargar la publicación');
     }
 };

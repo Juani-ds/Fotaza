@@ -31,6 +31,11 @@ const Publicacion = sequelize.define('Publicacion', {
         validate: {
             isIn: [['activa', 'bajada', 'en_revision']]
         }
+    },
+        creado_en: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
     }
 }, {
     tableName: 'publicaciones',
