@@ -10,12 +10,11 @@ block content
         if publicaciones.length === 0
             p.text-gray-500 No hay publicaciones todavía.
         else
-            .grid.grid-cols-1.gap-6
+            .grid.gap-6(class='grid-cols-1 md:grid-cols-2')
                 each pub in publicaciones
-                    .bg-white.rounded-lg.shadow.p-4
-                        .flex.justify-between.items-start
-                            h2.text-xl.font-semibold= pub.titulo
-                            span.text-sm.text-gray-400= pub.Usuario.nombre
-                        if pub.Imagenes && pub.Imagenes.length > 0
-                            img.mt-3.rounded.w-full.object-cover(src=pub.Imagenes[0].url style='max-height:300px')
-                        a.text-blue-500.text-sm.mt-2.block(href='/publicaciones/' + pub.id) Ver publicación
+                    a.block.bg-white.rounded-lg.shadow.overflow-hidden(href='/publicaciones/' + pub.id class='hover:shadow-lg transition-shadow')
+                        if pub.Imagens && pub.Imagens.length > 0
+                            img.w-full.object-cover(src=pub.Imagens[0].url style='max-height:250px')
+                        .p-4
+                            h2.text-lg.font-semibold= pub.titulo
+                            span.text-sm.text-gray-400 Por #{pub.Usuario.nombre}
