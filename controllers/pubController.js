@@ -76,7 +76,7 @@ export const verPublicacion = async (req, res) => {
         if (!publicacion) {
             return res.status(404).send('Publicación no encontrada');
         }
-    console.log(JSON.stringify(publicacion, null, 2));
+        
         res.render('publicaciones/ver', { publicacion });
     } catch (error) {
         console.error(error);
