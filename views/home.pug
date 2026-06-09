@@ -2,8 +2,23 @@ extends layout.pug
 
 block content
     .max-w-4xl.mx-auto.mt-8.px-4
+
+        //- Publicaciones de seguidos
+        if usuario && publicacionesSeguidos.length > 0
+            .mb-8
+                h2.text-xl.font-semibold.mb-4 Publicaciones de usuarios que sigo
+                .grid.gap-6(class='grid-cols-1 md:grid-cols-2')
+                    each pub in publicacionesSeguidos
+                        a.block.bg-white.rounded-lg.shadow.overflow-hidden(href='/publicaciones/' + pub.id class='hover:shadow-lg transition-shadow')
+                            if pub.Imagens && pub.Imagens.length > 0
+                                img.w-full.object-cover(src=pub.Imagens[0].url style='max-height:250px')
+                            .p-4
+                                h2.text-lg.font-semibold= pub.titulo
+                                a.text-sm.text-gray-400(href='/usuarios/' + pub.Usuario.id) Por #{pub.Usuario.nombre}
+
+        //- Todas las publicaciones
         .flex.justify-between.items-center.mb-6
-            h1.text-2xl.font-bold Publicaciones
+            h2.text-xl.font-semibold Todas las publicaciones
             if usuario
                 a.bg-blue-500.text-white.px-4.py-2.rounded(href='/publicaciones/crear' class='hover:bg-blue-600') + Nueva publicación
 
@@ -17,4 +32,4 @@ block content
                             img.w-full.object-cover(src=pub.Imagens[0].url style='max-height:250px')
                         .p-4
                             h2.text-lg.font-semibold= pub.titulo
-                            span.text-sm.text-gray-400 Por #{pub.Usuario.nombre}
+                            a.text-sm.text-gray-400(href='/usuarios/' + pub.Usuario.id) Por #{pub.Usuario.nombre}

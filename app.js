@@ -8,7 +8,9 @@ import pubRoutes from './routes/pubRoutes.js';
 import { Publicacion, Imagen, Usuario } from './models/index.js';
 import imagenRoutes from './routes/imagenRoutes.js';
 import comentarioRoutes from './routes/comentarioRoutes.js';
-
+import usuarioRoutes from './routes/usuarioRoutes.js';
+import { Seguidor } from './models/index.js';
+import { Op } from 'sequelize';
 
 //constantes
 const app = express();
@@ -45,20 +47,43 @@ app.get('/', async (req, res) => {
     try {
         const publicaciones = await Publicacion.findAll({
             include: [
-                { model: Usuario, attributes: ['nombre'] },
+                { model: Usuario, attributes: ['nombre', 'id'] },
                 { model: Imagen, attributes: ['url'], limit: 1 }
             ],
             order: [['creado_en', 'DESC']]
         });
-        res.render('home', { publicaciones });
+
+        let publicacionesSeguidos = [];
+        if (req.session.usuario) {
+            const { Seguidor } = await import('./models/index.js');
+            const seguidos = await Seguidor.findAll({
+                where: { seguidor_id: req.session.usuario.id },
+                attributes: ['seguido_id']
+            });
+            const seguidosIds = seguidos.map(s => s.seguido_id);
+
+            if (seguidosIds.length > 0) {
+                const { Op } = await import('sequelize');
+                publicacionesSeguidos = await Publicacion.findAll({
+                    where: { usuario_id: seguidosIds },
+                    include: [
+                        { model: Usuario, attributes: ['nombre', 'id'] },
+                        { model: Imagen, attributes: ['url'], limit: 1 }
+                    ],
+                    order: [['creado_en', 'DESC']]
+                });
+            }
+        }
+
+        res.render('home', { publicaciones, publicacionesSeguidos });
     } catch (error) {
         console.error(error);
-        res.render('home', { publicaciones: [] });
+        res.render('home', { publicaciones: [], publicacionesSeguidos: [] });
     }
 });
 app.use('/imagenes', imagenRoutes);
 app.use('/comentarios', comentarioRoutes);
-
+app.use('/usuarios', usuarioRoutes);
 
 //servidor
 app.listen(PORT, () => {

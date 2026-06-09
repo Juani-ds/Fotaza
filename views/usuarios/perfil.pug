@@ -1,0 +1,36 @@
+extends ../layout.pug
+
+block content
+    .max-w-4xl.mx-auto.mt-8.px-4
+
+        .bg-white.rounded-lg.shadow.p-6.mb-6
+            .flex.justify-between.items-start
+                div
+                    h1.text-2xl.font-bold= perfil.nombre
+                    p.text-gray-400= perfil.email
+                    .flex.gap-6.mt-3
+                        div
+                            span.font-bold= seguidores
+                            span.text-gray-500.ml-1 seguidores
+                        div
+                            span.font-bold= siguiendo
+                            span.text-gray-500.ml-1 siguiendo
+                if usuario && usuario.id !== perfil.id
+                    if yaSigue
+                        form(method='POST' action='/usuarios/' + perfil.id + '/dejar-seguir')
+                            button.bg-gray-200.text-gray-700.px-4.py-2.rounded(type='submit' class='hover:bg-gray-300') Dejar de seguir
+                    else
+                        form(method='POST' action='/usuarios/' + perfil.id + '/seguir')
+                            button.bg-blue-500.text-white.px-4.py-2.rounded(type='submit' class='hover:bg-blue-600') Seguir
+
+        h2.text-xl.font-semibold.mb-4 Publicaciones
+        if publicaciones.length === 0
+            p.text-gray-400 Este usuario no tiene publicaciones aún.
+        else
+            .grid.gap-6(class='grid-cols-1 md:grid-cols-2')
+                each pub in publicaciones
+                    a.block.bg-white.rounded-lg.shadow.overflow-hidden(href='/publicaciones/' + pub.id class='hover:shadow-lg transition-shadow')
+                        if pub.Imagens && pub.Imagens.length > 0
+                            img.w-full.object-cover(src=pub.Imagens[0].url style='max-height:200px')
+                        .p-4
+                            h3.text-lg.font-semibold= pub.titulo

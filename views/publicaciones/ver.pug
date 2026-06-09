@@ -9,7 +9,7 @@ block content
         .bg-white.rounded-lg.shadow.p-6
             .flex.justify-between.items-start.mb-4
                 h1.text-2xl.font-bold= publicacion.titulo
-                span.text-sm.text-gray-400 Por #{publicacion.Usuario.nombre}
+                a.text-sm.text-gray-400(href='/usuarios/' + publicacion.Usuario.id) Por #{publicacion.Usuario.nombre}
             if publicacion.descripcion
                 p.text-gray-600.mb-4= publicacion.descripcion
             if publicacion.Etiqueta && publicacion.Etiqueta.length > 0
