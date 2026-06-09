@@ -3,33 +3,115 @@ extends layout.pug
 block content
     .max-w-4xl.mx-auto.mt-8.px-4
 
-        //- Publicaciones de seguidos
-        if usuario && publicacionesSeguidos.length > 0
-            .mb-8
-                h2.text-xl.font-semibold.mb-4 Publicaciones de usuarios que sigo
-                .grid.gap-6(class='grid-cols-1 md:grid-cols-2')
-                    each pub in publicacionesSeguidos
-                        a.block.bg-white.rounded-lg.shadow.overflow-hidden(href='/publicaciones/' + pub.id class='hover:shadow-lg transition-shadow')
-                            if pub.Imagens && pub.Imagens.length > 0
-                                img.w-full.object-cover(src=pub.Imagens[0].url style='max-height:250px')
-                            .p-4
-                                h2.text-lg.font-semibold= pub.titulo
-                                a.text-sm.text-gray-400(href='/usuarios/' + pub.Usuario.id) Por #{pub.Usuario.nombre}
-
-        //- Todas las publicaciones
-        .flex.justify-between.items-center.mb-6
-            h2.text-xl.font-semibold Todas las publicaciones
-            if usuario
+        if usuario
+            .flex.justify-end.mb-4
                 a.bg-blue-500.text-white.px-4.py-2.rounded(href='/publicaciones/crear' class='hover:bg-blue-600') + Nueva publicación
 
-        if publicaciones.length === 0
-            p.text-gray-500 No hay publicaciones todavía.
-        else
-            .grid.gap-6(class='grid-cols-1 md:grid-cols-2')
-                each pub in publicaciones
-                    a.block.bg-white.rounded-lg.shadow.overflow-hidden(href='/publicaciones/' + pub.id class='hover:shadow-lg transition-shadow')
-                        if pub.Imagens && pub.Imagens.length > 0
-                            img.w-full.object-cover(src=pub.Imagens[0].url style='max-height:250px')
-                        .p-4
-                            h2.text-lg.font-semibold= pub.titulo
-                            a.text-sm.text-gray-400(href='/usuarios/' + pub.Usuario.id) Por #{pub.Usuario.nombre}
+        .flex.border-b.mb-6
+            button#tab-global.px-6.py-2.font-medium.border-b-2.border-blue-500.text-blue-500(onclick='showTab("global")') Global
+            if usuario
+                button#tab-seguidos.px-6.py-2.font-medium.text-gray-500(onclick='showTab("seguidos")' class='hover:text-blue-500') Siguiendo
+
+        div#tab-global-content
+            if publicaciones.length === 0
+                p.text-gray-500 No hay publicaciones todavía.
+            else
+                .grid.gap-6(class='grid-cols-1 md:grid-cols-2')
+                    each pub in publicaciones
+                        a.block.bg-white.rounded-lg.shadow.overflow-hidden(href='/publicaciones/' + pub.id class='hover:shadow-lg transition-shadow')
+                            .p-3.border-b
+                                h2.text-base.font-semibold= pub.titulo
+                                span.text-sm.text-gray-400 #{pub.Usuario.nombre}
+                            if pub.Imagens && pub.Imagens.length > 0
+                                .relative.overflow-hidden(style='max-height:250px')
+                                    .flex.transition-transform.duration-300(class='carousel-track' style='transform:translateX(0)')
+                                        each img in pub.Imagens
+                                            img.object-cover.flex-shrink-0.w-full(src=img.url style='max-height:250px; min-width:100%')
+                                    if pub.Imagens.length > 1
+                                        button.absolute.left-2.bg-black.bg-opacity-40.text-white.rounded-full.w-7.h-7.flex.items-center.justify-center.text-sm(type='button' class='carousel-prev' style='top:50%;transform:translateY(-50%)') ‹
+                                        button.absolute.right-2.bg-black.bg-opacity-40.text-white.rounded-full.w-7.h-7.flex.items-center.justify-center.text-sm(type='button' class='carousel-next' style='top:50%;transform:translateY(-50%)') ›
+                            .p-3
+                                span.text-xs.text-gray-300= new Date(pub.creado_en).toLocaleString('es-AR')
+
+        if usuario
+            div#tab-seguidos-content.hidden
+                if publicacionesSeguidos.length === 0
+                    p.text-gray-500 No seguís a nadie o tus seguidos no tienen publicaciones.
+                else
+                    .grid.gap-6(class='grid-cols-1 md:grid-cols-2')
+                        each pub in publicacionesSeguidos
+                            a.block.bg-white.rounded-lg.shadow.overflow-hidden(href='/publicaciones/' + pub.id class='hover:shadow-lg transition-shadow')
+                                .p-3.border-b
+                                    h2.text-base.font-semibold= pub.titulo
+                                    span.text-sm.text-gray-400 #{pub.Usuario.nombre}
+                                if pub.Imagens && pub.Imagens.length > 0
+                                    .relative.overflow-hidden(style='max-height:250px')
+                                        .flex.transition-transform.duration-300(class='carousel-track' style='transform:translateX(0)')
+                                            each img in pub.Imagens
+                                                img.object-cover.flex-shrink-0.w-full(src=img.url style='max-height:250px; min-width:100%')
+                                        if pub.Imagens.length > 1
+                                            button.absolute.left-2.bg-black.bg-opacity-40.text-white.rounded-full.w-7.h-7.flex.items-center.justify-center.text-sm(type='button' class='carousel-prev' style='top:50%;transform:translateY(-50%)') ‹
+                                            button.absolute.right-2.bg-black.bg-opacity-40.text-white.rounded-full.w-7.h-7.flex.items-center.justify-center.text-sm(type='button' class='carousel-next' style='top:50%;transform:translateY(-50%)') ›
+                                .p-3
+                                    span.text-xs.text-gray-300= new Date(pub.creado_en).toLocaleString('es-AR')
+
+        script.
+            let seguidosIniciado = false;
+
+            function initCarousels(container) {
+                container.querySelectorAll('.relative.overflow-hidden').forEach(c => {
+                    if (c.dataset.initialized) return;
+                    c.dataset.initialized = 'true';
+                    const track = c.querySelector('.carousel-track');
+                    const prev = c.querySelector('.carousel-prev');
+                    const next = c.querySelector('.carousel-next');
+                    if (!track || !prev || !next) return;
+                    let current = 0;
+                    const total = track.children.length;
+                    next.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        current = (current + 1) % total;
+                        track.style.transform = 'translateX(-' + (current * 100) + '%)';
+                    });
+                    prev.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        current = (current - 1 + total) % total;
+                        track.style.transform = 'translateX(-' + (current * 100) + '%)';
+                    });
+                });
+            }
+
+            initCarousels(document.getElementById('tab-global-content'));
+
+            function showTab(tab) {
+                const global = document.getElementById('tab-global-content');
+                const seguidos = document.getElementById('tab-seguidos-content');
+                const btnGlobal = document.getElementById('tab-global');
+                const btnSeguidos = document.getElementById('tab-seguidos');
+                if (tab === 'seguidos') {
+                    if (seguidos) {
+                        seguidos.classList.remove('hidden');
+                        const carousels = seguidos.querySelectorAll('.relative.overflow-hidden');
+                        console.log('carruseles encontrados:', carousels.length);
+                        initCarousels(seguidos);
+                    }
+                    global.classList.add('hidden');
+                    if (btnSeguidos) {
+                        btnSeguidos.classList.add('border-b-2', 'border-blue-500', 'text-blue-500');
+                        btnSeguidos.classList.remove('text-gray-500');
+                    }
+                    btnGlobal.classList.remove('border-b-2', 'border-blue-500', 'text-blue-500');
+                    btnGlobal.classList.add('text-gray-500');
+                } else {
+                    global.classList.remove('hidden');
+                    if (seguidos) seguidos.classList.add('hidden');
+                    btnGlobal.classList.add('border-b-2', 'border-blue-500', 'text-blue-500');
+                    btnGlobal.classList.remove('text-gray-500');
+                    if (btnSeguidos) {
+                        btnSeguidos.classList.remove('border-b-2', 'border-blue-500', 'text-blue-500');
+                        btnSeguidos.classList.add('text-gray-500');
+                    }
+                }
+            }

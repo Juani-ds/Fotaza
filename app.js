@@ -48,7 +48,7 @@ app.get('/', async (req, res) => {
         const publicaciones = await Publicacion.findAll({
             include: [
                 { model: Usuario, attributes: ['nombre', 'id'] },
-                { model: Imagen, attributes: ['url'], limit: 1 }
+                { model: Imagen, attributes: ['url'] }
             ],
             order: [['creado_en', 'DESC']]
         });

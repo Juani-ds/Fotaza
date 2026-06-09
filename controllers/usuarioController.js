@@ -9,7 +9,7 @@ export const verPerfil = async (req, res) => {
 
         const publicaciones = await Publicacion.findAll({
             where: { usuario_id: perfil.id },
-            include: [{ model: Imagen, attributes: ['url'], limit: 1 }],
+            include: [{ model: Imagen, attributes: ['url'] }],
             order: [['creado_en', 'DESC']]
         });
 
