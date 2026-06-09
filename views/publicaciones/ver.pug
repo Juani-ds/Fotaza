@@ -20,23 +20,48 @@ block content
             each imagen in publicacion.Imagens
                 .mb-8.border-b.pb-8
                     img.w-full.rounded.mb-4(src=imagen.url)
-                    .mb-4
+
+                    .mb-6
                         if imagen.totalVotos > 0
                             .flex.items-center.gap-2.mb-2
                                 span.text-yellow-400.font-bold.text-lg= imagen.promedio.toFixed(1)
                                 span.text-gray-400.text-sm= '(' + imagen.totalVotos + ' votos)'
                         else
                             p.text-gray-400.text-sm.mb-2 Sin valoraciones aún
-
                         if usuario && !imagen.yaValoro
                             form(method='POST' action='/imagenes/' + imagen.id + '/valorar')
                                 .flex.gap-1.mb-2
                                     each val in [1,2,3,4,5]
                                         button.text-3xl.text-gray-300(type='button' class='star-btn' data-value=val) ★
-                                input(type='hidden' name='puntuacion' id='puntuacion' value='')
+                                input(type='hidden' name='puntuacion' value='')
                                 button.bg-yellow-400.text-white.px-4.py-1.rounded.text-sm(type='submit' class='hover:bg-yellow-500') Valorar
                         else if usuario && imagen.yaValoro
                             p.text-sm.text-gray-400 Ya valoraste esta imagen
+
+                    .mt-4
+                        h3.text-lg.font-semibold.mb-3 Comentarios
+                        if imagen.Comentarios && imagen.Comentarios.length > 0
+                            each comentario in imagen.Comentarios
+                                .bg-gray-50.rounded.p-3.mb-2
+                                    .flex.justify-between.items-start
+                                        div
+                                            span.font-medium.text-sm= comentario.Usuario.nombre
+                                            p.text-gray-700.mt-1= comentario.contenido
+                                        if usuario && usuario.id === publicacion.Usuario.id
+                                            form(method='POST' action='/comentarios/' + comentario.id + '?_method=DELETE')
+                                                button.text-red-400.text-xs(type='submit' class='hover:text-red-600') Eliminar
+                        else
+                            p.text-gray-400.text-sm No hay comentarios aún
+
+                        if publicacion.comentarios_abiertos
+                            if usuario
+                                form.mt-3(method='POST' action='/comentarios/imagen/' + imagen.id)
+                                    textarea.w-full.border.rounded.px-3.py-2.text-sm(name='contenido' rows='2' placeholder='Escribí un comentario...' required)
+                                    button.mt-2.bg-blue-500.text-white.px-4.py-1.rounded.text-sm(type='submit' class='hover:bg-blue-600') Comentar
+                            else
+                                a.text-blue-500.text-sm(href='/auth/login') Iniciá sesión para comentar
+                        else
+                            p.text-gray-400.text-sm.mt-2 Los comentarios están cerrados
 
         a.text-blue-500.mt-4.block(href='/') Volver
 
@@ -45,7 +70,6 @@ block content
             const stars = form.querySelectorAll('.star-btn');
             const input = form.querySelector('input[name="puntuacion"]');
             if (!stars.length || !input) return;
-
             stars.forEach(star => {
                 star.addEventListener('mouseover', function() {
                     const val = parseInt(this.dataset.value);

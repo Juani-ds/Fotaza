@@ -1,11 +1,13 @@
 import 'dotenv/config';
 import express from 'express';
 import session from 'express-session';
+import methodOverride from 'method-override';
 import authRoutes from './routes/authRoutes.js';
 import { sequelize } from './models/index.js';
 import pubRoutes from './routes/pubRoutes.js';
 import { Publicacion, Imagen, Usuario } from './models/index.js';
 import imagenRoutes from './routes/imagenRoutes.js';
+import comentarioRoutes from './routes/comentarioRoutes.js';
 
 
 //constantes
@@ -16,6 +18,7 @@ const PORT = process.env.PORT;
 //middlewares
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(methodOverride('_method'));
 
 //sesiones
 app.use(session({
@@ -54,6 +57,7 @@ app.get('/', async (req, res) => {
     }
 });
 app.use('/imagenes', imagenRoutes);
+app.use('/comentarios', comentarioRoutes);
 
 
 //servidor
