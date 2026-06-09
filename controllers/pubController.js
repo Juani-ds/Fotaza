@@ -67,7 +67,7 @@ export const verPublicacion = async (req, res) => {
     try {
         const publicacion = await Publicacion.findByPk(req.params.id, {
             include: [
-                { model: Usuario, attributes: ['nombre'] },
+                { model: Usuario, attributes: ['nombre', 'id'] },
                 { model: Imagen, include: [
                     { model: Valoracion },
                     { model: Comentario, include: [{ model: Usuario, attributes: ['nombre', 'id'] }] }
