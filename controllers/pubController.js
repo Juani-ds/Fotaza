@@ -63,6 +63,7 @@ export const crearPublicacion = async (req, res) => {
         res.status(500).send('Error al crear la publicacion');
     }
 };
+
 export const verPublicacion = async (req, res) => {
     try {
         const publicacion = await Publicacion.findByPk(req.params.id, {
@@ -94,5 +95,56 @@ export const verPublicacion = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send('Error al cargar la publicación');
+    }
+};
+
+export const buscar = async (req, res) => {
+    try {
+        const { q } = req.query;
+        const { Op } = await import('sequelize');
+
+        if (!q || q.trim() === '') {
+            return res.render('publicaciones/buscar', { publicaciones: [], q: '' });
+        }
+
+        const termino = `%${q.trim()}%`;
+
+        const porTitulo = await Publicacion.findAll({
+            where: { titulo: { [Op.iLike]: termino } },
+            include: [
+                { model: Usuario, attributes: ['nombre', 'id'] },
+                { model: Imagen, attributes: ['url'] },
+                { model: Etiqueta }
+            ]
+        });
+
+        const porAutor = await Publicacion.findAll({
+            include: [
+                { model: Usuario, attributes: ['nombre', 'id'], where: { nombre: { [Op.iLike]: termino } }, required: true },
+                { model: Imagen, attributes: ['url'] },
+                { model: Etiqueta }
+            ]
+        });
+
+        const porEtiqueta = await Publicacion.findAll({
+            include: [
+                { model: Usuario, attributes: ['nombre', 'id'] },
+                { model: Imagen, attributes: ['url'] },
+                { model: Etiqueta, where: { nombre: { [Op.iLike]: termino } }, required: true }
+            ]
+        });
+
+        const todas = [...porTitulo, ...porAutor, ...porEtiqueta];
+        const idsVistos = new Set();
+        const publicaciones = todas.filter(pub => {
+            if (idsVistos.has(pub.id)) return false;
+            idsVistos.add(pub.id);
+            return true;
+        });
+
+        res.render('publicaciones/buscar', { publicaciones, q });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error en la búsqueda');
     }
 };

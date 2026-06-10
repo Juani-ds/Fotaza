@@ -1,0 +1,29 @@
+extends ../layout.pug
+
+block content
+    .max-w-4xl.mx-auto.mt-8.px-4
+        form.mb-8(method='GET' action='/publicaciones/buscar')
+            .flex.gap-2
+                input.w-full.border.rounded-full.px-5.py-2.shadow-sm(type='text' name='q' value=q || '' placeholder='Buscar por título, autor o etiqueta...' autofocus)
+                button.bg-blue-500.text-white.px-6.py-2.rounded-full(type='submit' class='hover:bg-blue-600') Buscar
+
+        if publicaciones && publicaciones.length === 0 && q
+            p.text-gray-500 No se encontraron resultados para "#{q}"
+        else if publicaciones && publicaciones.length > 0
+            p.text-gray-500.mb-4= publicaciones.length + ' resultado(s) para "' + q + '"'
+            .grid.gap-6(class='grid-cols-1 md:grid-cols-2')
+                each pub in publicaciones
+                    .bg-white.rounded-lg.shadow.overflow-hidden
+                        .p-3.border-b
+                            a.text-base.font-semibold(href='/publicaciones/' + pub.id)= pub.titulo
+                            br
+                            a.text-sm.text-gray-400(href='/usuarios/' + pub.Usuario.id) #{pub.Usuario.nombre}
+                        if pub.Imagens && pub.Imagens.length > 0
+                            a(href='/publicaciones/' + pub.id)
+                                img.w-full.object-cover(src=pub.Imagens[0].url style='max-height:200px')
+                        .p-3
+                            if pub.Etiqueta && pub.Etiqueta.length > 0
+                                .flex.flex-wrap.gap-1.mb-1
+                                    each etiqueta in pub.Etiqueta
+                                        span.bg-gray-100.text-gray-600.px-2.py-1.rounded.text-xs= etiqueta.nombre
+                            span.text-xs.text-gray-300= new Date(pub.creado_en).toLocaleString('es-AR')
