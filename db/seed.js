@@ -12,6 +12,8 @@ try {
         { id: 3, nombre: 'Maxi', email: 'max@g', password_hash: pass, rol: 'usuario', activo: true }
     ]);
 
+    await sequelize.query(`SELECT setval('usuarios_id_seq', (SELECT MAX(id) FROM usuarios))`);
+
     console.log('Seed completado exitosamente');
     process.exit(0);
 } catch (error) {
